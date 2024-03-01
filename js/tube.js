@@ -31,7 +31,7 @@ const loadDataByCategories = async (categoryId) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/videos/category/${categoryId}`);
     const data = await res.json();
 
-    if (data.length === 0) {
+    if (data.data.length === 0) {
         errorElement.classList.remove('hidden');
     }
     else {
