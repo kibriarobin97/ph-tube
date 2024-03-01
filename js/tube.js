@@ -1,5 +1,7 @@
 const btnContainer = document.getElementById('btn-container');
 const cardContainer = document.getElementById('card-container');
+const errorElement = document.getElementById('error-element');
+
 let displayCategory = 1000;
 
 const loadCategories = async () => {
@@ -9,9 +11,16 @@ const loadCategories = async () => {
     data.data.forEach(item => {
         // console.log(item);
         const newBtn = document.createElement('button');
-        newBtn.className = 'btn btn-ghost bg-slate-700 text-white text-lg';
+        newBtn.className = 'category-btn btn btn-ghost bg-slate-700 text-white text-lg hover:bg-red-400';
         newBtn.innerText = item.category;
-        newBtn.addEventListener('click', () => loadDataByCategories(item.category_id))
+        newBtn.addEventListener('click', () => {
+            loadDataByCategories(item.category_id);
+            const allButton = document.querySelectorAll('.category-btn');
+            for(const button of allButton){
+                button.classList.remove('bg-red-600');
+            }
+            newBtn.classList.add('bg-red-600');
+        })
         btnContainer.appendChild(newBtn);
     });
 }
@@ -21,14 +30,23 @@ const loadDataByCategories = async (categoryId) => {
     displayCategory = categoryId;
     const res = await fetch(`https://openapi.programming-hero.com/api/videos/category/${categoryId}`);
     const data = await res.json();
-    // console.log(data);
+
+    if (data.length === 0) {
+        errorElement.classList.remove('hidden');
+    }
+    else {
+        errorElement.classList.add('hidden');
+    }
+
     cardContainer.innerHTML = '';
     data.data.forEach(video => {
         console.log(video);
         let verifiedBadge = '';
-        if(video.authors[0].verified){
-            verifiedBadge =`<img class="w-6 h-6" src="./images/verified.png" alt="">`;
+
+        if (video.authors[0].verified) {
+            verifiedBadge = `<img class="w-6 h-6" src="./images/verified.png" alt="">`;
         }
+
         const newCard = document.createElement('div');
         newCard.innerHTML = `
             <div class="card w-full bg-base-100 shadow-xl">
